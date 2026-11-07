@@ -1,0 +1,85 @@
+{
+  "updated": "2026-11-07T00:00:00Z",
+  "jobs": [
+    {
+      "id": "front-office-executive-bengaluru",
+      "title": "Front Office Executive",
+      "brand": "Shilton Hotels",
+      "location": "Bengaluru",
+      "department": "Front Office",
+      "type": "Full time",
+      "status": "open",
+      "description": ""
+    },
+    {
+      "id": "sous-chef-bengaluru",
+      "title": "Sous Chef",
+      "brand": "Watson’s",
+      "location": "Bengaluru",
+      "department": "Kitchen",
+      "type": "Full time",
+      "status": "open",
+      "description": ""
+    },
+    {
+      "id": "restaurant-captain-kochi",
+      "title": "Restaurant Captain",
+      "brand": "Starlight Bar & Restaurant",
+      "location": "Kochi",
+      "department": "Food and Beverage",
+      "type": "Full time",
+      "status": "open",
+      "description": ""
+    },
+    {
+      "id": "commis-chef-kabini",
+      "title": "Commis Chef",
+      "brand": "Fireflies Resorts",
+      "location": "Kabini",
+      "department": "Kitchen",
+      "type": "Full time",
+      "status": "open",
+      "description": ""
+    },
+    {
+      "id": "bartender-bengaluru",
+      "title": "Bartender",
+      "brand": "Sinclair Club",
+      "location": "Bengaluru",
+      "department": "Food and Beverage",
+      "type": "Full time",
+      "status": "open",
+      "description": ""
+    },
+    {
+      "id": "banquet-and-events-manager-chennai",
+      "title": "Banquet and Events Manager",
+      "brand": "22 Catering Co.",
+      "location": "Chennai",
+      "department": "Events",
+      "type": "Full time",
+      "status": "open",
+      "description": ""
+    },
+    {
+      "id": "housekeeping-supervisor-kochi",
+      "title": "Housekeeping Supervisor",
+      "brand": "Shilton Hotels",
+      "location": "Kochi",
+      "department": "Housekeeping",
+      "type": "Full time",
+      "status": "open",
+      "description": ""
+    },
+    {
+      "id": "guest-relations-executive-chennai",
+      "title": "Guest Relations Executive",
+      "brand": "Shilton Hotels",
+      "location": "Chennai",
+      "department": "Front Office",
+      "type": "Full time",
+      "status": "open",
+      "description": ""
+    }
+  ]
+}
