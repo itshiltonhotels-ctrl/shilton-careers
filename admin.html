@@ -69,15 +69,18 @@ dialog form{padding:26px}dialog h3{margin:0 0 6px}.acts{display:flex;gap:12px;ju
 <section id="dash" class="hide">
 <div class="stats"><div class="stat"><b id="s1">0</b><span>Open roles</span></div><div class="stat"><b id="s2">0</b><span>Closed roles</span></div><div class="stat"><b id="s3">0</b><span>Locations</span></div><div class="stat"><b id="s4">0</b><span>Departments</span></div></div>
 <div id="bn"></div>
+<div class="card" id="guide" style="margin-bottom:16px;padding:18px 22px"><b>How to add a job</b>
+<ol style="margin:8px 0 0;padding-left:20px"><li>Click <b>+ Add job</b>, fill in the details and click <b>Save job</b>.</li><li>To remove a job from the website, click <b>Close</b> next to it. Click <b>Reopen</b> to bring it back.</li><li>When you are finished, click <b>Save to website</b>. Your changes go live in 1 to 2 minutes.</li></ol>
+<p class="note">Nothing changes on the website until you click <b>Save to website</b>.</p></div>
 <div class="bar">
 <div class="grow"><input id="q" type="search" placeholder="Search by title, brand, location or department" aria-label="Search jobs"></div>
 <select id="fs" aria-label="Filter by status"><option value="">All statuses</option><option value="open">Open</option><option value="closed">Closed</option></select>
 <button id="add" class="pri">+ Add job</button>
-<button id="pub" class="pri" disabled>Publish changes</button>
+<button id="pub" class="pri" disabled>Save to website</button>
 <button id="bak" title="Download a backup copy of all jobs">Backup</button>
 </div>
 <div class="tw"><table><thead><tr><th>Job title</th><th>Brand</th><th>Location</th><th>Department</th><th>Type</th><th>Status</th><th></th></tr></thead><tbody id="tb"></tbody></table><div id="em" class="empty hide">No jobs found.</div></div>
-<p class="note">Changes are saved here first. Click <b>Publish changes</b> to update the website. The live careers page refreshes within one to two minutes.</p>
+<p class="note">Changes are saved here first. Click <b>Save to website</b> to update the website. The live careers page refreshes within one to two minutes.</p>
 </section>
 </main>
 
@@ -107,12 +110,12 @@ const b64e=s=>{const b=new TextEncoder().encode(s);let r='';for(let i=0;i<b.leng
 const b64d=s=>{const r=atob(s.replace(/\s/g,''));const b=Uint8Array.from(r,c=>c.charCodeAt(0));return new TextDecoder().decode(b)};
 const api=(p,o={})=>fetch('https://api.github.com'+p,{...o,headers:{Authorization:'Bearer '+tok,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'}});
 const cpath=()=>`/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.path}`;
-function setDirty(v){dirty=v;$('#pub').disabled=!v;$('#pub').textContent=v?'Publish changes •':'Publish changes'}
+function setDirty(v){dirty=v;$('#pub').disabled=!v;$('#pub').textContent=v?'Save to website •':'Save to website'}
 function banner(h,c){$('#bn').innerHTML=h?`<div class="banner ${c}">${h}</div>`:''}
 
 async function load(){
   const r=await api(cpath()+'?ref='+encodeURIComponent(cfg.branch));
-  if(r.status===404){const rr=await api(`/repos/${cfg.owner}/${cfg.repo}`);if(!rr.ok)throw new Error('The repository was not found or this token cannot access it. Check the repository name in Advanced settings and that the token includes this repository.');jobs=SEED.map(([title,brand,location,department])=>({id:uid(title,location),title,brand,location,department,type:'Full time',status:'open',description:''}));sha=null;fresh=true;setDirty(true);banner('No jobs file exists yet. The current example roles are loaded below. Edit them, then click <b>Publish changes</b> to create the live jobs list.','warn');return}
+  if(r.status===404){const rr=await api(`/repos/${cfg.owner}/${cfg.repo}`);if(!rr.ok)throw new Error('The repository was not found or this token cannot access it. Check the repository name in Advanced settings and that the token includes this repository.');jobs=SEED.map(([title,brand,location,department])=>({id:uid(title,location),title,brand,location,department,type:'Full time',status:'open',description:''}));sha=null;fresh=true;setDirty(true);banner('No jobs file exists yet. The current example roles are loaded below. Edit them, then click <b>Save to website</b> to create the live jobs list.','warn');return}
   if(r.status===401)throw new Error('The access token is not valid or has expired. Please check it and try again.');
   if(r.status===403||r.status===404)throw new Error('This token cannot access the repository. It needs “Contents: Read and write” on the careers repository.');
   if(!r.ok)throw new Error('GitHub returned an error ('+r.status+'). Please try again.');
@@ -139,26 +142,26 @@ $('#jf').addEventListener('submit',e=>{
   const v={title:$('#f-title').value.trim(),brand:$('#f-brand').value.trim(),location:$('#f-loc').value.trim(),department:$('#f-dep').value.trim(),type:$('#f-type').value,status:$('#f-st').value,description:$('#f-desc').value.trim()};
   if(!v.title||!v.brand||!v.location||!v.department){$('#ferr').textContent='Please fill in the job title, brand, location and department.';return}
   if(editing){const j=jobs.find(x=>x.id===editing);Object.assign(j,v)}else jobs.unshift({id:uid(v.title,v.location),...v});
-  $('#dlg').close();setDirty(true);render();toast(editing?'Job updated. Remember to publish.':'Job added. Remember to publish.');
+  $('#dlg').close();setDirty(true);render();toast(editing?'Job updated. Now click Save to website.':'Job added. Now click Save to website.');
 });
 $('#cx').onclick=()=>$('#dlg').close();
 $('#add').onclick=()=>openDlg();
 $('#tb').addEventListener('click',e=>{
   const b=e.target.closest('button[data-a]');if(!b)return;const j=jobs.find(x=>x.id===b.dataset.id);if(!j)return;
   if(b.dataset.a==='edit')openDlg(j);
-  if(b.dataset.a==='tog'){j.status=j.status==='closed'?'open':'closed';setDirty(true);render();toast(j.status==='closed'?'Job closed. It will be hidden once published.':'Job reopened.')}
-  if(b.dataset.a==='del'&&confirm('Delete “'+j.title+'” ('+j.location+')? This cannot be undone after publishing.')){jobs=jobs.filter(x=>x!==j);setDirty(true);render();toast('Job deleted. Remember to publish.')}
+  if(b.dataset.a==='tog'){j.status=j.status==='closed'?'open':'closed';setDirty(true);render();toast(j.status==='closed'?'Job closed. It will be hidden once you click Save to website.':'Job reopened.')}
+  if(b.dataset.a==='del'&&confirm('Delete “'+j.title+'” ('+j.location+')? This cannot be undone after publishing.')){jobs=jobs.filter(x=>x!==j);setDirty(true);render();toast('Job deleted. Now click Save to website.')}
 });
 $('#q').oninput=render;$('#fs').onchange=render;
 
 $('#pub').onclick=async()=>{
-  const btn=$('#pub');btn.disabled=true;btn.textContent='Publishing…';
+  const btn=$('#pub');btn.disabled=true;btn.textContent='Saving…';
   const body={message:'Update jobs via admin dashboard',content:b64e(JSON.stringify({updated:new Date().toISOString(),jobs},null,2)+'\n'),branch:cfg.branch};
   if(sha)body.sha=sha;
   try{
     const r=await api(cpath(),{method:'PUT',body:JSON.stringify(body)});
-    if(r.ok){const j=await r.json();sha=j.content.sha;fresh=false;setDirty(false);banner('Published. The live careers page will show these changes within one to two minutes.','ok');toast('Published successfully');return}
-    let m='Publishing failed ('+r.status+').';
+    if(r.ok){const j=await r.json();sha=j.content.sha;fresh=false;setDirty(false);banner('Saved. The careers page will show these changes within one to two minutes.','ok');toast('Saved to website');return}
+    let m='Saving failed ('+r.status+').';
     if(r.status===401)m='Your token has expired. Disconnect and sign in again with a new token.';
     else if(r.status===403||r.status===404)m='This token is not allowed to save changes. It needs “Contents: Read and write” on the careers repository.';
     else if(r.status===409||r.status===422)m='The jobs list was changed by someone else. Click Reload to get the latest version (your unsaved edits will be lost, so download a Backup first if needed).';
